@@ -1,24 +1,35 @@
-import * as React from 'react';
+// @ts-nocheck
+import React from 'react';
 import Grid from '@mui/material/Grid';
 
 import mapStyles from './Map.Style'; 
-import MapOpenLayers from '../../components/map/MapOpenLayers';
+import {MapConsumer} from '../../components/map/MapConsumer';
 
-const Map = () => {
+import {TablesProvider} from '../../contexts/tables';
+import {QueryProvider} from '../../contexts/query';
+import {LayersProvider} from '../../contexts/layers';
+
+const MapWrapper = () => {
   return (
-    <Grid
-      container
-      spacing={0}
-      direction="row"
-      alignItems="center"
-      justifyContent="center"
-      style={mapStyles.grid}
-    >
-      <Grid item xs={10} style={mapStyles.gridItem}>
-        <MapOpenLayers/>
-      </Grid>
-    </Grid>
+    <TablesProvider>
+      <QueryProvider>
+        <LayersProvider>
+          <Grid
+            container
+            spacing={0}
+            direction="row"
+            alignItems="center"
+            justifyContent="center"
+            style={mapStyles.grid}
+          >
+            <Grid item xs={11} style={mapStyles.gridItem}>
+              <MapConsumer/>
+            </Grid>
+          </Grid>
+        </LayersProvider>
+      </QueryProvider>
+    </TablesProvider>      
   );
 }
 
-export default Map;
+export default MapWrapper;

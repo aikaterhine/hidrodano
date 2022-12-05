@@ -18,10 +18,16 @@ const mapStyles : { [key: string]: React.CSSProperties } = {
     },
     grid: {
         textAlign: "center",
+        justifyContent: "center",
         minHeight: '100vh'
     },
     gridItem: {
         border: '10px solid rgba(0, 0, 0, 0.4)'
+    },
+    panelItem: {
+        paddingLeft: 30,
+        height: '100%',
+        width: '100%',
     }
   };
 

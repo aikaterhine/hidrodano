@@ -10,7 +10,7 @@ const NavBar = () => {
   const blue = '#28A2DB';
   const gray = '#616462'
   
-  const [colorInicio, setColorInicio] = useState(gray);
+  const [colorInicio, setColorInicio] = useState(blue);
   const [colorMapa, setColorMapa] = useState(gray);
   const [colorSobre, setColorSobre] = useState(gray);
 
