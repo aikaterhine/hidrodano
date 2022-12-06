@@ -20,8 +20,7 @@ const MapWrapper = () => {
             direction="row"
             alignItems="center"
             justifyContent="center"
-            style={mapStyles.grid}
-          >
+            style={mapStyles.grid}>
             <Grid item xs={11} style={mapStyles.gridItem}>
               <MapConsumer/>
             </Grid>

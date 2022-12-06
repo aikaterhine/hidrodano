@@ -2,9 +2,11 @@ import { Request, Response } from 'express';
 import { Client } from 'pg';
 
 export default class QueryController {
-   public async show(request: Request, response: Response) {
-      const { database,  barragemId }: { database: string, barragemId: string } = request.body;
-
+   public async getMinimumPath(request: Request, response: Response) {
+      const { database, barragemId } = request.query;
+      const barragem_id = Number(barragemId);
+      console.log(barragemId) 
+      
       const client = new Client({
          host: 'localhost',
          database: database as string || 'barragens',
@@ -47,7 +49,7 @@ export default class QueryController {
          `);
 
          await client.query(`
-                              CREATE OR REPLACE FUNCTION execute_dkijstra() RETURNS VOID AS $$
+                              CREATE OR REPLACE FUNCTION execute_dkijstra(barragem_id VARCHAR) RETURNS VOID AS $$
                                  DECLARE
                                     barragem_node_id bigint;
                                     barragem_codigo_snisb integer;
@@ -74,7 +76,7 @@ export default class QueryController {
                                     outputVar bigint;
                                     
                                  BEGIN                                    
-                                    SELECT cast(b.node_id as bigint), b.codigo_snisb INTO barragem_node_id, barragem_codigo_snisb FROM barragem b WHERE b.codigo_snisb = ${barragemId};
+                                    SELECT cast(b.node_id as bigint), b.codigo_snisb INTO barragem_node_id, barragem_codigo_snisb FROM barragem b WHERE b.codigo_snisb=cast(barragem_id as integer);
                               
                                     SELECT ponto.the_geom INTO ponto_geom FROM bho_trecho_drenagem_vertices_pgr ponto WHERE id=barragem_node_id;
                                  
@@ -101,23 +103,18 @@ export default class QueryController {
 
          await client.query(`DO $$
                               BEGIN
-                              PERFORM execute_dkijstra();
+                              PERFORM execute_dkijstra(cast(${barragemId} as varchar));
                               END;
                               $$;
                            `);
 
-         let {rows: values} = await client.query(`
-                                                      SELECT jsonb_build_object(
-                                                         'type',       'Feature',
-                                                         'id',         node,
-                                                         'geometry',   ST_AsGeoJSON(geom_)::jsonb
-                                                         ) as geomjson FROM bho_minimum_path_geom;
-                                                   `)
+         let {rows: values} = await client.query(`SELECT minimum_path.node, ST_AsGeoJSON(minimum_path.geom_) AS geomjson FROM bho_minimum_path_geom minimum_path;`)
 
          client.end();
 
          return response.json({ values });
       } catch (error) {
+         console.log(error);
          if (client) {
             client.end();
          }

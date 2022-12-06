@@ -14,6 +14,6 @@ routes.get('/barragens', tablesController.getBarragens);
 routes.get('/barragens/id', tablesController.getBarragemById);
 
 // Resultados da query realizada
-routes.get('/results', queryController.show);
+routes.get('/barragens/minimum_path', queryController.getMinimumPath);
 
 export default routes;

@@ -11,7 +11,7 @@ const panelStyles: { [key: string]: React.CSSProperties } = {
         boxShadow: '3px 3px 5px 5px rgba(0, 0, 0, 0.07), 3px 3px 5px 5px rgba(0, 0, 0, 0.05)',
     },
     title:{
-        paddingRight: 50,
+        paddingRight: 20,
         fontWeight: '900',
         color: '#616462',
         paddingBottom: 10
@@ -70,13 +70,13 @@ const panelStyles: { [key: string]: React.CSSProperties } = {
         display: 'flex',
         flexDirection: "column",
         textAlign: 'left',
-        marginLeft: '10%',
+        marginLeft: '5%',
     },
     contentData: {
         display: 'flex',
         flexDirection: "column",
         textAlign: 'left',
-        marginRight: '10%',
+        marginRight: '5%',
     }
 };
 

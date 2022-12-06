@@ -56,7 +56,7 @@ interface ContextData {
 const LayersContext = createContext<ContextData>({} as ContextData);
 
 export const LayersProvider: React.FC = ({ children } : any) => {
-   const { results, hasGeomValue, tableHasGeomValue, tableValues } = useContext(QueryContext);
+   const { tableValuesMinimumPath, hasGeomValue, tableHasGeomValue, tableValues } = useContext(QueryContext);
 
    // IDs das camadas (para facilitar identificação de cada uma).
    const [id, setId] = useState(0);
@@ -156,25 +156,26 @@ export const LayersProvider: React.FC = ({ children } : any) => {
          }
          
          if (hasGeomValue) {
-            /*// Armazenamento do geojson de cada resultado, para uso no objeto que será o download da camada.
-            const resultsGeoJSON = results.map((result: any) => result.geojson);
+            // Armazenamento do geojson de cada valor da tabela de barragens, para uso no objeto que será o download da camada.
+            const valuesGeoJSON = tableValuesMinimumPath.map((value: any) => value.geomjson);
 
             // Geração das features individualmente para que seja possível armazenar em cada uma as informações referentes à própria.
             let features: Feature<Geometry>[] = [];
-            results.forEach((result: any, index) => {
-               result.geojson = JSON.parse(result.geojson);
-
+            tableValuesMinimumPath.forEach((value: any, index: number) => {
+               value.geomjson = JSON.parse(value.geomjson);
+               
                features.push(
                   // Nova feature gerada a partir da leitura do geoJSON do resultado.
-                  new GeoJSON().readFeature(result.geojson, {
+                  new GeoJSON().readFeature(value.geomjson, {
                      featureProjection: 'EPSG:3857',
+                     dataProjection: "EPSG:3857",
                   })
                );
 
-               delete result.geojson;
+               delete value.geomjson;
 
                // Armazenamento das informações de cada feature.
-               features[index].set('info', result);
+               features[index].set('info', value);
             });
 
             // A fonte (source) das informações para geração da camada.
@@ -186,55 +187,21 @@ export const LayersProvider: React.FC = ({ children } : any) => {
             });
 
             // Obtenção das cores e formatos randômicos iniciais.
-            const [colorFill, colorStroke] = getRandomColor();
+            //const colorFill = '#28A2DB';
+            const colorStroke = 'red';
 
-            // Estilização das features.
-            vectorSource.getFeatures().forEach((feature, index) => feature.setStyle(
-               new Style({
-                  fill: new Fill({
-                     color: colorFill,
-                  }),
-                  stroke: new Stroke({
-                     color: colorStroke,
-                     width: 1,
-                  }),
-                  text: new Text({
-                     text: '',
-                     font: '12px roboto',
-                     fill: new Fill({
-                        color: '#000000',
-                     }),
-                  })
-               })
-            ));
-
-            // Captação dos rótulos (colunas) da barragemId feita para exibição no menu de rótulos.
-            let layerLabels = null;
-            if (results.length > 0) {
-               layerLabels = Object.keys(results[0]);
-            }
+            const styleFeature = new Style({
+               stroke: new Stroke({
+                  color: colorStroke,
+                  width: 4,
+                }),
+             });
 
             // Captação do objeto GeoJSON representando a camada a ser renderizada, para posterior utilização no download das camadas.
             const geoJSONObject = {
                type: 'FeatureCollection',
-               features: [...resultsGeoJSON],
+               features: [...valuesGeoJSON],
             };
-
-            // Inicialização do objeto responsável pela filtragem da camada.
-            const filter: IFilter = {
-               type: '',
-               label: '',
-               value: '',
-
-               fillColor: '#000000',
-               isFillColorRandom: false,
-
-               strokeColor: '#000000',
-               isStrokeColorRandom: false,
-            };
-
-            // Inicialização do objeto responsável pela legenda do filtro da camada.
-            const filterSubtitle: IFilterSubtitle[] = [];
 
             // A layer em si
             const vectorLayer = new VectorLayer({
@@ -243,27 +210,22 @@ export const LayersProvider: React.FC = ({ children } : any) => {
                id,
                // Classname necessário para evitar que labels 'declutteradas' sobreponham outras layers (https://github.com/openlayers/openlayers/issues/10096)
                className: `Layer ${id}`,
-               // Query realizada pelo usuário (para exibição ao manter o mouse em cima da camada, na legenda).
-               barragemId,
-               labels: layerLabels,
                geoJson: geoJSONObject,
-               // Objeto com os inputs do fitro da camada.
-               filter,
-               // Array com os valores do fitro da camada, para utilização na legenda.
-               filterSubtitle,
-
-               source: vectorSource
+               source: vectorSource,
             });
 
+            // Estilização das features.
+            vectorLayer.setStyle(styleFeature)
+            
             // Atualização do vetor de layers e do contador de ID das layers.
             setLayers((oldLayers) => [...oldLayers, vectorLayer]);
-            setId((id) => id + 1);*/
+            setId((id) => id + 1);
          }
       }
       return () => {};
       // Necessário para evitar loops infinitos na criação de layers
       // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, [results, tableValues, tableHasGeomValue, hasGeomValue]);
+   }, [tableValuesMinimumPath, tableValues, tableHasGeomValue, hasGeomValue]);
 
    return (
       <LayersContext.Provider

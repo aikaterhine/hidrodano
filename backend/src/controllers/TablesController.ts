@@ -4,6 +4,7 @@ import { Client } from 'pg';
 export default class TablesController {
    public async getBarragens(request: Request, response: Response) {
       const { database } = request.query;
+      
       const client = new Client({
          host: 'localhost',
          database: database as string || 'barragens',
@@ -31,7 +32,7 @@ export default class TablesController {
 
          return response.status(400).json((error as Error).message);
       }
-   }
+   };
 
    public async getBarragemById(request: Request, response: Response) {
       const { database, barragemId } = request.query;
@@ -64,5 +65,5 @@ export default class TablesController {
 
          return response.status(400).json((error as Error).message);
       }
-   }
+   };
 }

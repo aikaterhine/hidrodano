@@ -11,6 +11,7 @@ interface ContextData {
    tableHasGeomValue: boolean;
    
    getTable(database: string): Promise<void>;
+   setTableHasGeomValue(tableHasGeomValue: boolean): any;
 
    loading: boolean;
 }
@@ -83,7 +84,7 @@ export const TablesProvider: React.FC = ({ children } : any) => {
 
    return (
       <TablesContext.Provider
-         value={{ database, tableValues, tableHasGeomValue, getTable, loading }}
+         value={{ database, tableValues, tableHasGeomValue, getTable, setTableHasGeomValue, loading }}
       >
          {children}
       </TablesContext.Provider>

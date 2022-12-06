@@ -10,12 +10,14 @@ import VectorSource from 'ol/source/Vector';
 import { getUid } from 'ol/util';
 import OSM from 'ol/source/OSM';
 import {Zoom} from 'ol/control';
+//import FixedPopup from 'ol-ext/overlay/FixedPopup';
 import Select from 'ol/interaction/Select';
 
 // components
 import {Panel} from '../panel/Panel';
 
 import LayersContext from '../../contexts/layers';
+import QueryContext from '../../contexts/query';
 
 import mapConsumerStyles from './MapConsumer.Style';
 import './MapConsumer.Style.css';
@@ -29,7 +31,8 @@ interface MapConsumerProps {
 
 export const MapConsumer: React.FC = ({ children } : MapConsumerProps) => {
   const { layers } = useContext(LayersContext);
-  
+  const { submitQuery } = useContext(QueryContext);
+
   /**Referência que mantém o status de renderização do componente, para evitar vazamentos de memória em tarefas assíncronas realizadas em componentes já desmontados */
   const isMounted = useRef(true);
   
@@ -49,8 +52,11 @@ export const MapConsumer: React.FC = ({ children } : MapConsumerProps) => {
   const [openPanel, setOpenPanel] = useState(false);
 
   const onClickOpenPanel = (codigo_snisb: {any}) => {
-    submitQueryWithBarragemID(codigo_snisb);
-    setBarragemId(codigo_snisb);
+    //submitQueryWithBarragemID(codigo_snisb);
+    //setBarragemId(codigo_snisb);
+    console.log("aqui")
+    submitQuery(String(codigo_snisb));
+    console.log("aqui2")
   }
 
   const submitQueryWithBarragemID = useCallback(
@@ -79,11 +85,26 @@ export const MapConsumer: React.FC = ({ children } : MapConsumerProps) => {
     const select = new Select();
     select.set('id', 'select');
 
-   /* const popup = new FixedPopup ({
-      popupClass: "default", //"tooltips", "warning" "black" "default", "tips", "shadow",
+    // On selected => show/hide popup
+    /*select.getFeatures().on(['add'], function(e) {
+      var feature = e.element;
+      var content = "";
+      content += "<img src='"+feature.get("img")+"'/>";
+      content += feature.get("text");
+      content += '<br/><i>powered by <a href="https://github.com/Viglino/ol-ext" target="ol">ol-ext</a></i>';
+      popup.show(feature.getGeometry().getFirstCoordinate(), content); 
+    })
+    */
+    /*const popup = new FixedPopup({
+      popupClass: "shadow", //"tooltips", "warning" "black" "default", "tips", "shadow",
       // anim: true,
       closeBox: true
-    });*/
+    });
+
+    popup.setPixelPosition([20,20], "top-left");
+    popup.setPopupClass("default");
+
+    console.log(popup)*/
 
     // create map
     const initialMap = new Map({
@@ -99,6 +120,7 @@ export const MapConsumer: React.FC = ({ children } : MapConsumerProps) => {
         zoom: 4
       }),
       controls: [new Zoom()],
+      //overlays: [popup]
     })
 
     initialMap?.addInteraction(select);
