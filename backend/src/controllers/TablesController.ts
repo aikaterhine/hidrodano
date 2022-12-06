@@ -51,8 +51,8 @@ export default class TablesController {
 
          // Retorna as informações da barragem escolhida pelo usuário.
          const { rows: values } = await client.query(
-            `SELECT codigo_snisb, nome_barr, uso_principal, uf, municipio, cat_risco, dano_potencial_assoc, orgao_fisc, reg_hidro 
-            FROM geodata.barragem WHERE codigo_snisb=${barragemId};`
+            `SELECT codigo_snisb, nome_barr, uso_principal, uf, municipio, cat_risco, dano_potencial_assoc, orgao_fisc, reg_hidro, ST_AsGeoJSON(barragem.geom) AS geomjson 
+            FROM geodata.barragem barragem WHERE codigo_snisb=${barragemId};`
          );
 
          client.end();

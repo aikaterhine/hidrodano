@@ -2,6 +2,7 @@
 import React, { createContext, useCallback, useEffect, useRef, useState } from 'react';
 
 import api from '../services/api';
+import { Result } from './query';
 
 interface ContextData {
    database: string;
@@ -10,8 +11,15 @@ interface ContextData {
 
    tableHasGeomValue: boolean;
    
-   getTable(database: string): Promise<void>;
+   getTableBarragens(database: string): Promise<void>;
    setTableHasGeomValue(tableHasGeomValue: boolean): any;
+
+   barragemId: string;
+   setBarragemId(barragemId: string): any;
+
+   barragemProperties: any;
+
+   getTableBarragensById(barragemId: string) : any; 
 
    loading: boolean;
 }
@@ -22,15 +30,21 @@ export const TablesProvider: React.FC = ({ children } : any) => {
    /**Referência que mantém o status de renderização do componente, para evitar vazamentos de memória em tarefas assíncronas realizadas em componentes já desmontados */
    const isMounted = useRef(true);
 
-   // Banco de dados selecionado atualmente.
-    const [database, setDatabase] = useState(
-        sessionStorage.getItem('@hidrodano/selected-database')
-        ? sessionStorage.getItem('@hidrodano/selected-database')!
-        : 'barragens'
-    );
+// Banco de dados selecionado atualmente.
+   const [database, setDatabase] = useState(
+      sessionStorage.getItem('@hidrodano/selected-database')
+      ? sessionStorage.getItem('@hidrodano/selected-database')!
+      : 'barragens'
+   );
 
    // Tabela de barragens com suas respectivas linhas.
    const [tableValues, setTableValues] = useState([]);
+
+   // Id da barragem escolhida pelo usuário.
+   const [barragemId, setBarragemId] = useState('');
+    
+   // Resultados obtidos da consulta.
+   const [barragemProperties, setBarragemProperties] = useState([]);
 
    // Flag para identificar se o resultado geométrico da tabela de barragens foi lido.
    const [tableHasGeomValue, setTableHasGeomValue] = useState(false);
@@ -39,7 +53,7 @@ export const TablesProvider: React.FC = ({ children } : any) => {
    const [loading, setLoading] = useState(false);
 
    // Função que realiza a chamada à api, para recuperar a tabela de barragens do banco.
-   const getTable = useCallback(async (database: string) => {
+   const getTableBarragens = useCallback(async (database: string) => {
       try {
          setLoading(true);
 
@@ -68,12 +82,31 @@ export const TablesProvider: React.FC = ({ children } : any) => {
       }
    }, []);
 
+   const getTableBarragensById = useCallback(
+      async (barragemId: string) => {
+         try {
+            setLoading(true);
+            setBarragemId(barragemId);
+            
+            const { data: { values } } = await api.get('/barragens/id', { params: { database: database, barragemId: barragemId } });
+  
+            if (!isMounted.current) return;
+  
+            setBarragemProperties(values[0]);
+            setLoading(false);
+         } catch {
+            return;
+         }
+      },
+      [barragemProperties]
+    );
+
    useEffect(() => {
-      getTable(database);
+      getTableBarragens(database);
 
       return () => {};
       // eslint-disable-next-line
-   }, [getTable]);
+   }, [getTableBarragens]);
 
    /**Atualiza a referência para indicar que o componente foi desmontado */
    useEffect(() => {
@@ -84,7 +117,7 @@ export const TablesProvider: React.FC = ({ children } : any) => {
 
    return (
       <TablesContext.Provider
-         value={{ database, tableValues, tableHasGeomValue, getTable, setTableHasGeomValue, loading }}
+         value={{ database, tableValues, tableHasGeomValue, loading, barragemProperties, barragemId, setBarragemId, getTableBarragensById, getTableBarragens, setTableHasGeomValue }}
       >
          {children}
       </TablesContext.Provider>

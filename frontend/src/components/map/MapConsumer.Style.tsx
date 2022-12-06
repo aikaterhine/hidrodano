@@ -3,7 +3,19 @@ const mapConsumerStyles: { [key: string]: React.CSSProperties } = {
     textAlign: 'center',
     height: '100%',
     width: '100%',
-    position: 'relative'
+    position: 'relative',
+  },
+  appLoading: {
+    overflow: 'auto',
+    margin: 'auto',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 2,
+    background: 'white',
+    pointerEvents: 'none',
+    backgroundColor: 'rgba(0,0,0,0.8)', display: 'block', width: '100%', height: '100%', color: 'white'
   },
   appZoomControl: {
     width: '50%',
@@ -56,7 +68,38 @@ const mapConsumerStyles: { [key: string]: React.CSSProperties } = {
   },
   clickedCoordLabelP: {
     margin: '10px',
-  },      
+  },
+  logo: {
+    width: '70%',
+    height: 'auto',
+  },
+  title: {
+    fontFamily: 'Bebas Neue',
+    fontSize: '100px'
+  },
+  subtitle: {
+    fontFamily: 'Poppins',
+    fontSize: '16px',
+    color: "#616462",
+    opacity: "70%",
+    textAlign: 'justify',
+    paddingTop: 15,
+    lineHeight: 1.5
+  },
+  grid: {
+    textAlign: "center",
+    justifyContent: "center",
+    minHeight: '100vh',
+  },
+  gridItem: {
+    border: '10px solid rgba(0, 0, 0, 0.4)',
+    padding: 0,
+  },
+  panelItem: {
+    paddingLeft: 30,
+    height: '100%',
+    width: '100%',
+  }      
 };
 
 export default mapConsumerStyles

@@ -10,19 +10,21 @@ import VectorSource from 'ol/source/Vector';
 import { getUid } from 'ol/util';
 import OSM from 'ol/source/OSM';
 import {Zoom} from 'ol/control';
-//import FixedPopup from 'ol-ext/overlay/FixedPopup';
 import Select from 'ol/interaction/Select';
+import Grid from '@mui/material/Grid';
+import CircularProgress from '@mui/material/CircularProgress';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 
 // components
 import {Panel} from '../panel/Panel';
 
 import LayersContext from '../../contexts/layers';
 import QueryContext from '../../contexts/query';
+import TablesContext from '../../contexts/tables';
 
 import mapConsumerStyles from './MapConsumer.Style';
 import './MapConsumer.Style.css';
-
-import api from '../../services/api';
 
 interface MapConsumerProps {
   layers: Array<VectorLayer<VectorSource<any>>>;
@@ -31,7 +33,8 @@ interface MapConsumerProps {
 
 export const MapConsumer: React.FC = ({ children } : MapConsumerProps) => {
   const { layers } = useContext(LayersContext);
-  const { submitQuery } = useContext(QueryContext);
+  const { loading } = useContext(QueryContext);
+  const { getTableBarragensById } = useContext(TablesContext);
 
   /**Referência que mantém o status de renderização do componente, para evitar vazamentos de memória em tarefas assíncronas realizadas em componentes já desmontados */
   const isMounted = useRef(true);
@@ -42,69 +45,19 @@ export const MapConsumer: React.FC = ({ children } : MapConsumerProps) => {
   // create state ref that can be accessed in OpenLayers onclick callback function
   const mapRef = useRef()
   mapRef.current = map
-
-  const [ barragemId, setBarragemId ] = useState('')
-  // Resultados obtidos da consulta.
-  const [barragemProperties, setBarragemProperties] = useState<Result[]>([]);
-
-  // Flag ativada durante a chamada à api.
-  const [loading, setLoading] = useState(false);
+  
   const [openPanel, setOpenPanel] = useState(false);
 
   const onClickOpenPanel = (codigo_snisb: {any}) => {
-    //submitQueryWithBarragemID(codigo_snisb);
-    //setBarragemId(codigo_snisb);
-    console.log("aqui")
-    submitQuery(String(codigo_snisb));
-    console.log("aqui2")
+    getTableBarragensById(codigo_snisb);
+    setOpenPanel(true);
   }
-
-  const submitQueryWithBarragemID = useCallback(
-    async (barragemId: string) => {
-       try {
-          setLoading(true);
-
-          const { data: { values } } = await api.get('/barragens/id', { params: { database: 'barragens', barragemId: barragemId } });
-
-          if (!isMounted.current) return;
-
-          setBarragemProperties(values[0]);
-          setLoading(false);
-          setOpenPanel(true);
-       } catch {
-          return;
-       }
-    },
-    [barragemId]
-  );
 
   // initialize map on first render - logic formerly put into componentDidMount
   useEffect( () => {
-
     // Seleção das features.
     const select = new Select();
     select.set('id', 'select');
-
-    // On selected => show/hide popup
-    /*select.getFeatures().on(['add'], function(e) {
-      var feature = e.element;
-      var content = "";
-      content += "<img src='"+feature.get("img")+"'/>";
-      content += feature.get("text");
-      content += '<br/><i>powered by <a href="https://github.com/Viglino/ol-ext" target="ol">ol-ext</a></i>';
-      popup.show(feature.getGeometry().getFirstCoordinate(), content); 
-    })
-    */
-    /*const popup = new FixedPopup({
-      popupClass: "shadow", //"tooltips", "warning" "black" "default", "tips", "shadow",
-      // anim: true,
-      closeBox: true
-    });
-
-    popup.setPixelPosition([20,20], "top-left");
-    popup.setPopupClass("default");
-
-    console.log(popup)*/
 
     // create map
     const initialMap = new Map({
@@ -120,7 +73,6 @@ export const MapConsumer: React.FC = ({ children } : MapConsumerProps) => {
         zoom: 4
       }),
       controls: [new Zoom()],
-      //overlays: [popup]
     })
 
     initialMap?.addInteraction(select);
@@ -161,20 +113,37 @@ export const MapConsumer: React.FC = ({ children } : MapConsumerProps) => {
   }
 
   return (
-    <div style={mapConsumerStyles.app}>
-      
-      <div style={mapConsumerStyles.appZoomControl}>
-      </div>
+    <Grid
+      container
+      spacing={3}
+      direction="row"
+      alignItems="center"
+      justifyContent="center"
+      style={mapConsumerStyles.grid}>
+      <Grid item xs={openPanel?8:10} style={mapConsumerStyles.gridItem}>
+        {loading ?
+          <div style={mapConsumerStyles.appLoading}>
+            <div style={{justifyContent: 'center', marginTop: '15%'}}>
+              <CircularProgress color="grey" style={{width: 50}}/>
+              <Typography style={{ fontSize: 20, fontFamily: 'poppins', fontWeight: '900', paddingTop: 15}}>Carregando</Typography>
+            </div>
+          </div> : null
+        }
 
-      { openPanel ?     
-      <div style={mapConsumerStyles.appPanelControl}>
-        <Panel style={mapConsumerStyles.appPanel} barragemProperties={barragemProperties} loading={loading}/>
-      </div> : null
+        <div style={mapConsumerStyles.app}>
+          <div style={mapConsumerStyles.appZoomControl}>
+          </div>
+
+          <div style={loading?{pointerEvents: 'none'}:null}>    
+            <div ref={mapRef} style={mapConsumerStyles.mapContainer}></div>
+          </div>
+        </div>
+      </Grid>
+      { openPanel ?
+        <Grid item xs={3}>
+          <Panel style={mapConsumerStyles.appPanel}/>
+        </Grid> : null
       }
-
-      <div>    
-        <div ref={mapRef} style={mapConsumerStyles.mapContainer}></div>
-      </div>
-    </div>
+  </Grid>
   )
 };

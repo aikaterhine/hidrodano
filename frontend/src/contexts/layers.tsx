@@ -60,6 +60,7 @@ export const LayersProvider: React.FC = ({ children } : any) => {
 
    // IDs das camadas (para facilitar identificação de cada uma).
    const [id, setId] = useState(0);
+   
    // Vetor de camadas em si.
    const [layers, setLayers] = useState<VectorLayer<VectorSource<any>>[]>([]);
 

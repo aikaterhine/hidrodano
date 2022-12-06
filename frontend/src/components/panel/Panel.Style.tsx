@@ -4,8 +4,8 @@ const panelStyles: { [key: string]: React.CSSProperties } = {
         textAlign: 'center',
         height: '100%',
         width: '100%',
-        minHeight: 500,
-        minWidth: 380,
+        minHeight: 600,
+        minWidth: 500,
         fontFamily: 'poppins',
         borderRadius: '40px 40px 40px 40px',
         boxShadow: '3px 3px 5px 5px rgba(0, 0, 0, 0.07), 3px 3px 5px 5px rgba(0, 0, 0, 0.05)',
@@ -24,10 +24,10 @@ const panelStyles: { [key: string]: React.CSSProperties } = {
         paddingTop: 30,
         overflowX: 'scroll',
         overflowY: 'scroll',
-        maxHeight: 300,
-        maxWidth: 380,
+        //maxHeight: 300,
+        //maxWidth: 450,
         display: 'flex',
-        flexDirection: "row",
+        flexDirection: "column",
         justifyContent: 'center',
         textAlign: 'center'
     },
@@ -70,13 +70,15 @@ const panelStyles: { [key: string]: React.CSSProperties } = {
         display: 'flex',
         flexDirection: "column",
         textAlign: 'left',
-        marginLeft: '5%',
+        marginLeft: 30,
+        width: '40%'
     },
     contentData: {
         display: 'flex',
         flexDirection: "column",
         textAlign: 'left',
-        marginRight: '5%',
+        marginRight: 30,
+        width: '50%'
     }
 };
 

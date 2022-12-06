@@ -25,7 +25,7 @@ import React, {
  interface ContextData { 
     barragemId: string;
     setBarragemId: Dispatch<SetStateAction<string>>;
-    submitQuery(barragemId: string): Promise<void>;
+    getMinimumPathByBarragemId(): Promise<void>;
  
     hasGeomValue: boolean;
     tableHasGeomValue: boolean;
@@ -47,28 +47,27 @@ import React, {
  const QueryContext = createContext<ContextData>({} as ContextData);
  
  export const QueryProvider: React.FC = ({ children }) => {
-    const { database, tableValues, tableHasGeomValue, setTableHasGeomValue } = useContext(TablesContext);
+    const { database, tableValues, tableHasGeomValue, barragemId, setTableHasGeomValue } = useContext(TablesContext);
 
     /**Referência que mantém o status de renderização do componente, para evitar vazamentos de memória em tarefas assíncronas realizadas em componentes já desmontados */
     const isMounted = useRef(true);
 
- // Id da barragem escolhida pelo usuário.
-    const [barragemId, setBarragemId] = useState('');
     // Resultados obtidos da consulta.
     const [tableValuesMinimumPath, setTableValuesMinimumPath] = useState<Result[]>([]);
 
     // Flag para identificar se a consulta obteve algum resultado geométrico.
     const [hasGeomValue, setHasGeomValue] = useState(false);
+    
     // Flag ativada durante a chamada à api.
     const [loading, setLoading] = useState(false);
  
     // Função que realiza a chamada à api, passando a id da barragem escolhida pelo usuário.
-    const submitQuery = useCallback(
-       async (barragemId: string) => {
+    const getMinimumPathByBarragemId = useCallback(
+       async () => {
           try {
             setLoading(true);
            
-            const { data: { values } } = await api.get('/barragens/minimum_path', { params: { database: 'barragens', barragemId: barragemId } });
+            const { data: { values } } = await api.get('/barragens/minimum_path', { params: { database: database, barragemId: barragemId } });
             console.log(values)
             
             if (!isMounted.current) return;
@@ -102,9 +101,7 @@ import React, {
     return (
        <QueryContext.Provider
           value={{
-             barragemId,
-             setBarragemId,
-             submitQuery,
+             getMinimumPathByBarragemId,
              tableValuesMinimumPath,
              hasGeomValue,
              tableHasGeomValue,
