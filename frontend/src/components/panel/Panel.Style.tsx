@@ -47,8 +47,13 @@ const panelStyles: { [key: string]: React.CSSProperties } = {
         display: 'flex',
         flexDirection: 'row'
     },
-    button: {
+    buttonRed: {
         backgroundColor: '#E74C3C',
+        borderRadius: 40,
+        height: 50,
+    },
+    buttonGray: {
+        backgroundColor: '#CFD0CF',
         borderRadius: 40,
         height: 50,
     },

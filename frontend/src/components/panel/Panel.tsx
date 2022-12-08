@@ -9,7 +9,7 @@ import panelStyles from './Panel.Style';
 
 export const Panel = () => {
   const { barragemProperties } = useContext(TablesContext);
-  const { getMinimumPathByBarragemId } = useContext(QueryContext);
+  const { getMinimumPathByBarragemId, loading } = useContext(QueryContext);
 
   const { codigo_snisb, nome_barr, uso_principal, uf, municipio, cat_risco, dano_potencial_assoc, orgao_fisc, reg_hidro } = barragemProperties;
 
@@ -125,7 +125,7 @@ export const Panel = () => {
           </div>**/}
         </div>
         <div style={panelStyles.panelButton}>
-          <Button variant="contained" style={panelStyles.button} onClick={() => getMinimumPathByBarragemId()}>
+          <Button variant="contained" style={loading?panelStyles.buttonGray:panelStyles.buttonRed} onClick={() => getMinimumPathByBarragemId()} disabled={loading}>
             <Typography variant="button" display="block" gutterBottom style={panelStyles.buttonText}>
               Simular Dano
             </Typography>
