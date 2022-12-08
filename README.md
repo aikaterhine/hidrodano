@@ -1,6 +1,5 @@
 # Hidrodano
 
-### Sobre
 
 O Hidrodano foi desenvolvido por Catarina Enya, aluna de Graduação do Departamento de Ciência da Computação da Universidade Federal de Minas Gerais. Este trabalho foi realizado sob a orientação do Professor Dr. Clodoveu Davis Jr. como requisito da disciplina de monografia em Sistemas de Informação.
 Este trabalho foi realizado sob a orientação do Professor Dr. Clodoveu Davis Jr. como requisito da disciplina de monografia em Sistemas de Informação.
